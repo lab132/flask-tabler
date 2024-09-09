@@ -1,11 +1,29 @@
 from visitor import Visitor
 from dominate.tags import *
+from dominate.svg import *
 from hashlib import sha1
+from flask_nav.elements import Navbar, NavigationItem
+from flask import url_for
+from flask_login import current_user
+
+class TablerNav(Navbar):
+    def __init__(self, title, items, items_right, show_theme_toggle=True):
+        super().__init__(title, items)
+        self.items_right = items_right
+        self.show_theme_toggle = show_theme_toggle
+
+class User(NavigationItem):
+    def __init__(self, items):
+        super().__init__()
+        self.items = items
 
 class TablerRenderer(Visitor):
     def __init__(self, id=None):
         self._in_dropdown = False
         self.id = id
+
+    def visit_TablerNav(self, node):
+        return self.visit_Navbar(node) 
 
     def visit_Navbar(self, node):
         node_id = self.id or sha1(str(id(node)).encode()).hexdigest()
@@ -36,6 +54,13 @@ class TablerRenderer(Visitor):
                             
         for item in node.items:
             nav_items.add(self.visit(item))
+
+        if hasattr(node, 'items_right') and node.items_right:
+            with title_content:
+                with div(_class='navbar-nav flex-row order-md-last'):
+                    with ul(_class='navbar-nav') as nav_items_right:
+                        for item in node.items_right:
+                            nav_items_right.add(self.visit(item))
 
 
         return root
@@ -89,3 +114,23 @@ class TablerRenderer(Visitor):
             item.add(a(node.text, _class='nav-link', href=node.get_url(), title=node.text))
 
         return item
+    
+    def visit_User(self, node):
+        if current_user.is_authenticated:
+            user = div(_class='nav-item dropdown')
+            with user:
+                with a(_class='nav-link d-flex lh-1 text-reset p-0', href='#', data_bs_toggle='dropdown', aria_haspopup='true', aria_expanded='false'):
+                    username = current_user.calc_username()
+                    initials = "".join([name[0] for name in username.split()]).upper()
+                    span(initials, _class='avatar avatar-sm')
+                    with div(_class='d-none d-xl-block ps-2'):
+                        div(username)
+                        role = current_user.roles[0].name if len(current_user.roles) > 0 else "No Role"
+                        div(role, _class='mt-1 small text-secondary')
+                with div(_class='dropdown-menu dropdown-menu-end dropdown-menu-arrow', data_bs_popper='static') as user_list:
+                    for item in node.items:
+                        user_list.add(self.visit(item))
+            return user
+        else:
+            return a("Login", _class='nav-link', href=url_for('security.login'))
+            
