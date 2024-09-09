@@ -6,10 +6,10 @@ class Tabler(object):
     def __init__(self, app=None, tabler_version=default_tabler_version):
         if app is not None:
             self.init_app(app)
+        self.version = tabler_version
 
     def init_app(self, app):
-        app.jinja_env.globals.update(tabler=self.tabler)
-        app.jinja_env.globals.update(tabler_version=self.tabler_version)
+        app.jinja_env.globals.update(tabler_version=self.version)
 
         blueprint = Blueprint(
             'tabler',
@@ -23,7 +23,7 @@ class Tabler(object):
 
         # setup support for flask-nav
         renderers = app.extensions.setdefault('nav_renderers', {})
-        renderer_name = (__name__ + '.nav', 'TablerRenderer')
+        renderer_name = ('flask_tabler.nav', 'TablerRenderer')
         renderers['tabler'] = renderer_name
 
         renderers[None] = renderer_name

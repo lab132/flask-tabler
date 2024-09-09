@@ -10,11 +10,11 @@ class TablerRenderer(Visitor):
     def visit_Navbar(self, node):
         node_id = self.id or sha1(str(id(node)).encode()).hexdigest()
 
-        root = header(_class='navbar navbar-default')
+        root = header(_class='navbar navbar-expand-md navbar-overlap d-print-none')
 
-        title_conent = root.add(div(_class="container-xl"))
+        title_content = root.add(div(_class="container-xl"))
 
-        collapse_button = title_conent.add(button(_class='navbar-toggler collapsed', type='button'))
+        collapse_button = title_content.add(button(_class='navbar-toggler', type='button'))
 
         collapse_button['data-bs-toggle'] = 'collapse'
         collapse_button['data-bs-target'] = '#navbar-menu'
@@ -24,9 +24,8 @@ class TablerRenderer(Visitor):
 
         collapse_button.add(span(_class='navbar-toggler-icon'))
 
-        title = title_conent.add(a(node.title, _class='navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3', href=node.get_url() if hasattr(node, "get_url") else "."))
-
-        nav = root.add(div(_class='collapse navbar-collpase', id='navbar-menu'))
+        title = title_content.add(a(node.title, _class='navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3', href=node.get_url() if hasattr(node, "get_url") else "."))
+        nav = title_content.add(div(_class='collapse navbar-collapse', id='navbar-menu'))
 
         nav_items = None
 
@@ -42,7 +41,7 @@ class TablerRenderer(Visitor):
         return root
 
     def visit_Text(self, node):
-        if not self._in_dropdown:
+        if self._in_dropdown:
             return div(node.text, _class='dropdown-item')
         return li(node.text, _class='nav-item')
 
