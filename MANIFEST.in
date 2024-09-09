@@ -1,0 +1,3 @@
+include README.md
+recursive-include flask_tabler/static *
+recursive-include flask_tabler/templates *.html.j2

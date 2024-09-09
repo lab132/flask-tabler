@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+{%- block html %}
+<head {% block html_attributes %}{% endblock %}>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+
+    <title>{% block title %}{{title|default}}{% endblock title %}</title>
+
+
+    <!-- CSS IMPORTS
+    <link rel="stylesheet" type="text/css" href="" />
+    -->
+    {% block styles %}
+        <link rel="stylesheet" href="{{url_for('static', filename='/tabler/css/{{ tabler_version }}/tabler.min.css')}}">
+    {% endblock %}
+</head>
+<body class="theme-dark-auto">
+    {%- block body %}
+    {%- block navbar %}
+    {%- endblock %}
+    <div class="page">
+        <div class="page-wrapper">
+            <div class="page-body">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    <!-- JS IMPORTS
+    <script type="application/javascript" src=""></script>
+    -->
+    <script type="application/javascript" src="{{url_for('static', filename='/tabler/js/{{ tabler_version }}/tabler.min.js')}}"></script>
+    <script type="application/javascript" src="{{url_for('static', filename='/tabler/js/imask.min.js')}}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+{% endblock %}
+</html>
+
