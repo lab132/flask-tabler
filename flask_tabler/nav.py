@@ -8,14 +8,15 @@ from flask_login import current_user
 
 class TablerNav(Navbar):
     def __init__(self, title, items, items_right, show_theme_toggle=True):
-        super().__init__(title, items)
+        super().__init__(title, *items)
         self.items_right = items_right
         self.show_theme_toggle = show_theme_toggle
 
 class User(NavigationItem):
-    def __init__(self, items):
+    def __init__(self, items, no_auth=None):
         super().__init__()
         self.items = items
+        self.no_auth = no_auth
 
 class TablerRenderer(Visitor):
     def __init__(self, id=None):
@@ -28,7 +29,7 @@ class TablerRenderer(Visitor):
     def visit_Navbar(self, node):
         node_id = self.id or sha1(str(id(node)).encode()).hexdigest()
 
-        root = header(_class='navbar navbar-expand-md navbar-overlap d-print-none')
+        root = header(_class='navbar navbar-expand-md d-print-none')
 
         title_content = root.add(div(_class="container-xl"))
 
@@ -125,7 +126,7 @@ class TablerRenderer(Visitor):
                     span(initials, _class='avatar avatar-sm')
                     with div(_class='d-none d-xl-block ps-2'):
                         div(username)
-                        role = current_user.roles[0].name if len(current_user.roles) > 0 else "No Role"
+                        role = ", ".join([ role.name for role in current_user.roles ]) if len(current_user.roles) > 0 else "User"
                         div(role, _class='mt-1 small text-secondary')
                 with div(_class='dropdown-menu dropdown-menu-end dropdown-menu-arrow', data_bs_popper='static') as user_list:
                     self._in_dropdown = True
@@ -133,6 +134,7 @@ class TablerRenderer(Visitor):
                         user_list.add(self.visit(item))
                     self._in_dropdown = False
             return user
-        else:
-            return a("Login", _class='nav-link', href=url_for('security.login'))
+        elif node.no_auth:
+            return self.visit(node.no_auth)
+        
             

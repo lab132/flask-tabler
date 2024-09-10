@@ -13,24 +13,50 @@
     <!-- CSS IMPORTS
     <link rel="stylesheet" type="text/css" href="" />
     -->
-    {% block styles %}
-        <link rel="stylesheet" href="{{url_for('static', filename='tabler/css/' + tabler_version + '/tabler.min.css')}}">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    {% endblock %}
+    {% block styles -%}
+        
+    <link rel="stylesheet" href="{{url_for('static', filename='tabler/css/' + tabler_version + '/tabler.min.css')}}">
+    <style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("{{url_for('static', filename='tabler/fonts/InterVariable.woff2')}}") format('woff2');
+    }
+    :root {
+        --tblr-font-sans-serif: 'Inter';
+    }
+    </style>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    {% endblock -%}
 </head>
 <body data-bs-theme="dark">
     {%- block body %}
-    <div class="page">
-        {%- block navbar %}
+    <div class="{%block page_class %} page {% endblock %}">
+        {%- block navbar -%}
         {%- endblock %}
         <div class="page-wrapper">
+            {% block page_header %}
+            <div class="container-xl">
+                <div class="page-header d-print-none">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+            {% endblock page_header %}  
             <div class="page-body">
-                {% block content %}
-                {% endblock %}
+                {%- block content -%}
+                {%- endblock %}
             </div>
         </div>
     </div>
-    {% endblock %}
+    {%- endblock %}
 
     <!-- JS IMPORTS
     <script type="application/javascript" src=""></script>

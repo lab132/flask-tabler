@@ -1,4 +1,5 @@
 from flask import Blueprint
+from .forms import render_form, render_table
 
 default_tabler_version = 'v1.0.0-beta20'
 
@@ -10,6 +11,8 @@ class Tabler(object):
 
     def init_app(self, app):
         app.jinja_env.globals.update(tabler_version=self.version)
+        app.jinja_env.globals.update(tabler_render_form=render_form)
+        app.jinja_env.globals.update(tabler_render_table=render_table)
 
         blueprint = Blueprint(
             'tabler',
