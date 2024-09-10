@@ -128,8 +128,10 @@ class TablerRenderer(Visitor):
                         role = current_user.roles[0].name if len(current_user.roles) > 0 else "No Role"
                         div(role, _class='mt-1 small text-secondary')
                 with div(_class='dropdown-menu dropdown-menu-end dropdown-menu-arrow', data_bs_popper='static') as user_list:
+                    self._in_dropdown = True
                     for item in node.items:
                         user_list.add(self.visit(item))
+                    self._in_dropdown = False
             return user
         else:
             return a("Login", _class='nav-link', href=url_for('security.login'))
