@@ -1,0 +1,8 @@
+
+
+{% macro render_datagrid_item(title) -%}
+<div class="datagrid-item">
+    <div class="datagrid-title">{{title}}</div>
+    <div class="datagrid-content">{{ caller() }}</div>
+</div>
+{%- endmacro %}
