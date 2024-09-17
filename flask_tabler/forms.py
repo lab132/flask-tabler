@@ -120,7 +120,7 @@ def render_table(objects, headers, action_cb=None):
                     for obj in objects:
                         with tr():
                             for header in headers:
-                                td(obj[header])
+                                td(str(obj[header]))
                             if action_cb:
                                 with td() as action_col:
                                     action_cb(action_col, obj)
