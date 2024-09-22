@@ -2,6 +2,13 @@ from dominate.tags import *
 from dominate.util import raw
 import sys
 
+def render_BooleanField(field_container, field):
+    with field_container:
+        with label(_class="form-check form-switch"):
+            input_(_class="form-check-input", type="checkbox", name=field.name, id=field.id, checked=field.data)
+            with span( _class="form-check-label"):
+                label(str(field.label), _for=field.id)
+
 def render_SelectField(field_container, field, multiple=False):
     with field_container:
         div(str(field.label), _class="form-label")
