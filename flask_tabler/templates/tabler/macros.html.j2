@@ -6,3 +6,34 @@
     <div class="datagrid-content">{{ caller() }}</div>
 </div>
 {%- endmacro %}
+
+{% macro render_table_custom(objects, headers, header_titles=None, header_attributes=None) %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table table-striped">
+            <thead>
+                <tr>
+                    {% if header_titles %}
+                        {% for header in header_titles %}
+                            <th {% if header_attributes[header] %} class="{{header_attributes[header]}}" {% endif %}>{{ header }}</th>
+                        {% endfor %}
+                    {% else %}
+                        {% for header in headers %}
+                            <th {% if header_attributes[header] %} class="{{header_attributes[header]}}" {% endif %}>{{ header }}</th>
+                        {% endfor %}
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in objects %}
+                    <tr>
+                        {% for header in headers %}
+                            <td>{{ caller(object[header], header, object) }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endmacro %}
