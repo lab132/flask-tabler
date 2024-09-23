@@ -92,7 +92,7 @@ class TablerRenderer(Visitor):
                     link['data-bs-auto-close'] = 'outside'
                     link['role'] = 'button'
                     link['aria-expanded'] = 'false'
-                    span(node.text, _class='nav-link-title')
+                    span(node.title, _class='nav-link-title')
             menu = button.add(div(_class='dropdown-menu'))
             menu['data-bs-popper'] = 'static'
 
