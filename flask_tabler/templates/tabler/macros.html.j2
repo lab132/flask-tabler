@@ -7,7 +7,30 @@
 </div>
 {%- endmacro %}
 
-{% macro render_table_custom(objects, headers, header_titles=None, header_attributes=None) %}
+{% macro render_pagination(pagination, endpoint, attributes="") %}
+<ul class="pagination {{attributes}}">
+    <li class="page-item {{ 'disabled' if not pagination.has_prev else '' }}">
+        <a class="page-link" href="{{ url_for(endpoint, p=pagination.prev_num) }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M15 6l-6 6l6 6"></path></svg>
+        prev</a>
+    </li>
+    {% for page in pagination.iter_pages() %}
+    {% if page %}
+        <li class="page-item {{ 'active' if page == pagination.page else '' }}"> <a class="page-link" href="{{ url_for(endpoint, p=page) }}">{{ page }}</a></li>
+    {% else %}
+      <li class="page-item disabled"> <a class="page-link" href="#">…</a></li>
+    {% endif %}
+    {% endfor %}
+    <li class="page-item {{ 'disabled' if not pagination.has_next else '' }}">
+        <a class="page-link" href="{{ url_for(endpoint, p=pagination.next_num) }}">
+        next
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 6l6 6l-6 6"></path></svg>
+        </a>
+    </li>
+</ul>
+{% endmacro %}
+
+{% macro render_table_custom(objects, headers, header_titles=None, header_attributes=None, pagination=None, pagination_endpoint='') %}
 <div class="card">
     <div class="table-responsive">
         <table class="table table-vcenter card-table table-striped">
@@ -35,5 +58,25 @@
             </tbody>
         </table>
     </div>
+    {% if pagination %}
+    <div class="card-footer d-flex align-items-center">
+        <p class="m-0 text-secondary">Showing
+            <span>
+                {{(pagination.page - 1) * pagination.per_page + 1}}
+            </span>
+            to 
+            <span>
+                {{ [(pagination.page) * pagination.per_page, pagination.total] | min}}
+            </span>
+             of 
+            <span>
+                {{pagination.total}}
+            </span>
+             entries
+        </p>
+        {{ render_pagination(pagination, pagination_endpoint, attributes="m-0 ms-auto") }}
+    </div>
+    {% endif %}
 </div>
 {% endmacro %}
+
