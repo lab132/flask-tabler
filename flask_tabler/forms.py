@@ -2,12 +2,14 @@ from dominate.tags import *
 from dominate.util import raw
 import sys
 
+
 def render_BooleanField(field_container, field):
     with field_container:
         with label(_class="form-check form-switch"):
             input_(_class="form-check-input", type="checkbox", name=field.name, id=field.id, checked=field.data)
-            with span( _class="form-check-label"):
+            with span(_class="form-check-label"):
                 label(str(field.label), _for=field.id)
+
 
 def render_SelectField(field_container, field, multiple=False):
     with field_container:
@@ -19,8 +21,9 @@ def render_SelectField(field_container, field, multiple=False):
                 if choice is not tuple:
                     choice = (choice, choice)
                 with option(choice[1], value=choice[0]):
-                    if(choice[0] in field.data):
+                    if choice[0] in field.data:
                         attr(selected="")
+
 
 def render_SelectMultipleField(field_container, field):
     render_SelectField(field_container, field, multiple=True)
@@ -35,10 +38,13 @@ def render_ModelSelectMultipleField(field_container, field):
                     for field_data in field.data:
                         if field_data.id == choice.id:
                             attr(selected="")
-        
+
 
 def render_script_SelectField(field):
-    return [ script(raw(f"""
+    return [
+        script(
+            raw(
+                f"""
         document.addEventListener("DOMContentLoaded", function () {{
             new TomSelect(\"#{field.id}\" , {{
             copyClassesToDropdown: false,
@@ -60,11 +66,14 @@ def render_script_SelectField(field):
     		}}
         }});
         }});
-    """))]
+    """
+            )
+        )
+    ]
+
 
 render_script_SelectMultipleField = render_script_SelectField
 render_script_ModelSelectMultipleField = render_script_SelectMultipleField
-
 
 
 def render_form(render_form, title, action, method="POST", submit_text="Submit"):
@@ -89,7 +98,14 @@ def render_form(render_form, title, action, method="POST", submit_text="Submit")
                             render_callback(field_container, field)
                         else:
                             div(str(field.label), _class="form-label")
-                            input_field = input_(_class="form-control", type=field.type, name=field.name, id=field.id, value=field.data, placeholder=field.description)   
+                            input_field = input_(
+                                _class="form-control",
+                                type=field.type,
+                                name=field.name,
+                                id=field.id,
+                                value=field.data,
+                                placeholder=field.description,
+                            )
                             if render_form.errors and field.name in render_form.errors:
                                 input_field["class"] += " is-invalid"
                                 with div(_class="invalid-feedback"):
@@ -98,6 +114,7 @@ def render_form(render_form, title, action, method="POST", submit_text="Submit")
             button(submit_text, _class="btn btn-primary", type="submit", value=submit_text)
 
     return result_form
+
 
 def render_form_scripts(render_form):
     rendered_scripts = []
@@ -111,6 +128,7 @@ def render_form_scripts(render_form):
             else:
                 rendered_scripts.append(result)
     return "\n".join([script.render() for script in rendered_scripts])
+
 
 def render_table(objects, headers, action_cb=None):
     container = div(_class="card")
@@ -131,6 +149,5 @@ def render_table(objects, headers, action_cb=None):
                             if action_cb:
                                 with td() as action_col:
                                     action_cb(action_col, obj)
-
 
     return container

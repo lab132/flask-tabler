@@ -1,7 +1,8 @@
 from flask import Blueprint
 from .forms import render_form, render_table, render_form_scripts
 
-default_tabler_version = 'v1.0.0-beta20'
+default_tabler_version = "v1.0.0-beta20"
+
 
 class Tabler(object):
     def __init__(self, app=None, tabler_version=default_tabler_version):
@@ -16,18 +17,14 @@ class Tabler(object):
         app.jinja_env.globals.update(tabler_render_table=render_table)
 
         blueprint = Blueprint(
-            'tabler',
-            __name__,
-            template_folder='templates',
-            static_folder='static',
-            static_url_path=app.static_url_path + '/tabler'
+            "tabler", __name__, template_folder="templates", static_folder="static", static_url_path=app.static_url_path + "/tabler"
         )
 
         app.register_blueprint(blueprint)
 
         # setup support for flask-nav
-        renderers = app.extensions.setdefault('nav_renderers', {})
-        renderer_name = ('flask_tabler.nav', 'TablerRenderer')
-        renderers['tabler'] = renderer_name
+        renderers = app.extensions.setdefault("nav_renderers", {})
+        renderer_name = ("flask_tabler.nav", "TablerRenderer")
+        renderers["tabler"] = renderer_name
 
         renderers[None] = renderer_name
