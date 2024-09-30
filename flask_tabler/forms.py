@@ -21,7 +21,7 @@ def render_SelectField(field_container, field, multiple=False):
                 if choice is not tuple:
                     choice = (choice, choice)
                 with option(choice[1], value=choice[0]):
-                    if choice[0] in field.data:
+                    if field.data and choice[0] in field.data:
                         attr(selected="")
 
 

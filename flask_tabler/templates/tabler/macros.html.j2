@@ -62,7 +62,7 @@
     <div class="card-footer d-flex align-items-center">
         <p class="m-0 text-secondary">Showing
             <span>
-                {{(pagination.page - 1) * pagination.per_page + 1}}
+                {{[(pagination.page - 1) * pagination.per_page + 1, pagination.total] | min}}
             </span>
             to 
             <span>

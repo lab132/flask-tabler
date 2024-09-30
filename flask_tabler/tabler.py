@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 from .forms import render_form, render_table, render_form_scripts
 
 default_tabler_version = "v1.0.0-beta20"
@@ -28,3 +28,6 @@ class Tabler(object):
         renderers["tabler"] = renderer_name
 
         renderers[None] = renderer_name
+
+    def render_overview(self, items, fields, title=None, description=None):
+        return render_template("tabler/overview.html.j2", items=items, fields=fields, title=title, description=description)

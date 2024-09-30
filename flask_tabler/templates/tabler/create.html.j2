@@ -1,0 +1,9 @@
+{% extends "base.html.j2" %}
+
+{% block page_class %} page page-center {% endblock page_class %}
+
+{% block content %}
+<div class="container container-tight">
+    {{tabler_render_form(form, action=endpoint, title=title)}}
+</div>
+{% endblock content %}

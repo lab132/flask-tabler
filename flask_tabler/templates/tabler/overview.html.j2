@@ -1,0 +1,44 @@
+{% extends "base.html.j2" %}
+
+{% from "tabler/macros.html.j2" import render_table_custom %}
+
+{% block page_header %}
+{{super()}}
+<div class="container-xl">
+    <div class="row g-2 align-items-center">
+        <div class="col">
+            <h2 class="page-title">
+                {{ title}}
+            </h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+        <div class="btn-list">
+        {% if current_user.has_permission(edit_permission) or current_user.has_permission("admin") %}
+            <a href="{{create_endpoint_url}}" class="btn btn-primary d-none d-sm-inline-block">
+                <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="icon">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M12 5l0 14"></path>
+                    <path d="M5 12l14 0"></path>
+                </svg>
+                {{ create_button_text }}
+            </a>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock page_header %}
+
+{% block content %}
+<div class="container-xl">
+    {% call(content, header, object) render_table_custom(objects.items, table_headers, header_attributes={"action": "w-1"}, pagination=objects, pagination_endpoint=pagination_endpoint ) %}
+      {% if header == "action" %}
+        {{ render_action_buttons(object) }}
+    {% else %}
+        {{ content }}
+    {% endif %}
+    {% endcall %}
+</div>
+{% endblock %}

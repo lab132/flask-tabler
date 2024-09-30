@@ -1,0 +1,37 @@
+{% extends "base.html.j2" %}
+
+{% from "tabler/macros.html.j2" import render_datagrid_item %}
+
+{% block content %}
+<div class="container-xl">
+    <div class="card">
+        <div class="card-header">
+            <div class="row g-2 align-items-center flex-fill">
+                <div class="col">
+                    <h2 class="page-title">
+                        {{ title }}
+                    </h2>
+                </div>
+                <div class="col-auto ms-auto d-print-none">
+                    <div class="btn-list">
+                    
+                        <a href="{{ edit_endpoint_url }}" class="btn btn-primary d-none d-sm-inline-block">
+                            Edit
+                        </a>
+                    
+                    </div>
+                </div>
+            </div>            
+        </div>
+        <div class="card-body">
+            <div class="datagrid">
+                {% for item in data_items %}
+                {% call render_datagrid_item(item) %}
+                    {{ object[item] }}
+                {% endcall %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
