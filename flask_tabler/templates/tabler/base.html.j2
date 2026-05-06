@@ -31,6 +31,9 @@
     </style>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     {% endblock -%}
+    {% block scripts_head %}
+    {# Block for per-page scripts in the head section #}
+    {% endblock %}
 </head>
 <body data-bs-theme="dark">
     {%- block body %}

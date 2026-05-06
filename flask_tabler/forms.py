@@ -1,5 +1,6 @@
 from dominate.tags import *
 from dominate.util import raw
+from markupsafe import Markup
 import sys
 
 
@@ -29,6 +30,22 @@ def render_SelectMultipleField(field_container, field):
     render_SelectField(field_container, field, multiple=True)
 
 
+def render_FileField(field_container, field):
+    """Render a file upload field with Tabler styling."""
+    with field_container:
+        div(str(field.label), _class="form-label")
+        with div(_class="custom-file-upload"):
+            input_field = input_(
+                _class="form-control",
+                type="file",
+                name=field.name,
+                id=field.id,
+                multiple=field.flags.multiple,
+            )
+            if field.description:
+                small(field.description, _class="form-hint d-block")
+
+
 def render_ModelSelectMultipleField(field_container, field):
     with field_container:
         div(str(field.label), _class="form-label")
@@ -41,10 +58,7 @@ def render_ModelSelectMultipleField(field_container, field):
 
 
 def render_script_SelectField(field):
-    return [
-        script(
-            raw(
-                f"""
+    return [script(raw(f"""
         document.addEventListener("DOMContentLoaded", function () {{
             new TomSelect(\"#{field.id}\" , {{
             copyClassesToDropdown: false,
@@ -66,10 +80,7 @@ def render_script_SelectField(field):
     		}}
         }});
         }});
-    """
-            )
-        )
-    ]
+    """))]
 
 
 render_script_SelectMultipleField = render_script_SelectField
@@ -113,7 +124,7 @@ def render_form(render_form, title, action, method="POST", submit_text="Submit")
         with div(_class="card-footer text-end"):
             button(submit_text, _class="btn btn-primary", type="submit", value=submit_text)
 
-    return result_form
+    return Markup(result_form.render())
 
 
 def render_form_scripts(render_form):
@@ -122,12 +133,11 @@ def render_form_scripts(render_form):
         render_callback = getattr(sys.modules[__name__], f"render_script_{field.type}", None)
         if callable(render_callback):
             result = render_callback(field)
-            print(result)
             if type(result) is list:
                 rendered_scripts.extend(result)
             else:
                 rendered_scripts.append(result)
-    return "\n".join([script.render() for script in rendered_scripts])
+    return Markup("\n".join([script.render() for script in rendered_scripts]))
 
 
 def render_table(objects, headers, action_cb=None):
@@ -150,4 +160,4 @@ def render_table(objects, headers, action_cb=None):
                                 with td() as action_col:
                                     action_cb(action_col, obj)
 
-    return container
+    return Markup(container.render())

@@ -80,3 +80,81 @@
 </div>
 {% endmacro %}
 
+{% macro render_file_input(name, label=None, multiple=False, accept=None, required=False) %}
+<div class="mb-3">
+    {% if label %}
+    <label class="form-label">{{ label }}</label>
+    {% endif %}
+    <div class="custom-file-upload">
+        <input type="file" id="{{ name }}" name="{{ name }}" class="form-control"
+            {% if multiple %}multiple{% endif %}
+            {% if accept %}accept="{{ accept }}"{% endif %}
+            {% if required %}required{% endif %}>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_artifact_table(artifacts) %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table table-striped">
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Checksum</th>
+                    <th class="w-1">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artifact in artifacts %}
+                <tr>
+                    <td>
+                        <span class="text-truncate">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" 
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon me-1">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                            </svg>
+                            {{ artifact.name }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if artifact.file_type %}
+                            <span class="badge bg-blue">{{ artifact.file_type.name }}</span>
+                        {% else %}
+                            <span class="text-secondary">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if artifact.size %}
+                            {% set size = artifact.size %}
+                            {% if size > 1024*1024*1024 %}
+                                {{ "%.1f"|format(size/(1024*1024*1024)) }} GB
+                            {% elif size > 1024*1024 %}
+                                {{ "%.1f"|format(size/(1024*1024)) }} MB
+                            {% elif size > 1024 %}
+                                {{ "%.1f"|format(size/1024) }} KB
+                            {% else %}
+                                {{ size }} B
+                            {% endif %}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        <code class="text-truncate">{{ artifact.checksum[:8] if artifact.checksum else '—' }}</code>
+                    </td>
+                    <td>
+                        <div class="btn-list flex-nowrap">
+                            {{ caller(artifact) }}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endmacro %}
