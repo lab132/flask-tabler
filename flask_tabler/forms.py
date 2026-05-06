@@ -56,6 +56,16 @@ def render_ModelSelectMultipleField(field_container, field):
                         if field_data.id == choice.id:
                             attr(selected="")
 
+def render_ModelSelectField(field_container, field):
+    with field_container:
+        div(str(field.label), _class="form-label")
+        with select(_class="form-select", id=field.id, value="", name=field.name, type="text"):
+            for choice in field.queryset:
+                with option(str(choice), value=choice.id):
+                    for field_data in field.data:
+                        if field_data.id == choice.id:
+                            attr(selected="")
+
 
 def render_script_SelectField(field):
     return [script(raw(f"""
