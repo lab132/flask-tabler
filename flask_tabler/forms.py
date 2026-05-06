@@ -66,6 +66,23 @@ def render_FileField(field_container, field):
                 small(field.description, _class="form-hint d-block")
 
 
+def render_PasswordField(field_container, field):
+    with field_container:
+        div(field.label.text, _class="form-label")
+        input_field = input_(
+            _class="form-control",
+            type="password",
+            name=field.name,
+            id=field.id,
+            placeholder=field.description,
+            autocomplete="new-password",
+        )
+        if field.errors:
+            input_field["class"] += " is-invalid"
+            with div(_class="invalid-feedback"):
+                div(", ".join(field.errors))
+
+
 def render_ModelSelectMultipleField(field_container, field):
     with field_container:
         div(field.label.text, _class="form-label")
