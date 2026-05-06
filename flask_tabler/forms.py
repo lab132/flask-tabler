@@ -4,25 +4,45 @@ from markupsafe import Markup
 import sys
 
 
+def _choice_data_custom_properties(field_name, choice_value):
+    if "color" not in (field_name or "").lower():
+        return None
+
+    color_key = str(choice_value).strip().lower()
+    tabler_color = color_key
+    if not tabler_color:
+        return None
+
+    return f"<span class='status-dot bg-{tabler_color} me-2'></span>"
+
+
 def render_BooleanField(field_container, field):
     with field_container:
         with label(_class="form-check form-switch"):
             input_(_class="form-check-input", type="checkbox", name=field.name, id=field.id, checked=field.data)
             with span(_class="form-check-label"):
-                label(str(field.label), _for=field.id)
+                label(field.label.text, _for=field.id)
 
 
 def render_SelectField(field_container, field, multiple=False):
     with field_container:
-        div(str(field.label), _class="form-label")
+        div(field.label.text, _class="form-label")
         with select(_class="form-select", id=field.id, value="", name=field.name) as select_field:
             if multiple:
                 select_field["multiple"] = "multiple"
             for choice in field.choices:
-                if choice is not tuple:
+                if not isinstance(choice, tuple):
                     choice = (choice, choice)
                 with option(choice[1], value=choice[0]):
-                    if field.data and choice[0] in field.data:
+                    custom_properties = _choice_data_custom_properties(field.name, choice[0])
+                    if custom_properties:
+                        attr(**{"data-custom-properties": custom_properties})
+                    is_selected = False
+                    if multiple and field.data:
+                        is_selected = choice[0] in field.data
+                    elif field.data is not None:
+                        is_selected = str(choice[0]) == str(field.data)
+                    if is_selected:
                         attr(selected="")
 
 
@@ -33,7 +53,7 @@ def render_SelectMultipleField(field_container, field):
 def render_FileField(field_container, field):
     """Render a file upload field with Tabler styling."""
     with field_container:
-        div(str(field.label), _class="form-label")
+        div(field.label.text, _class="form-label")
         with div(_class="custom-file-upload"):
             input_field = input_(
                 _class="form-control",
@@ -48,7 +68,7 @@ def render_FileField(field_container, field):
 
 def render_ModelSelectMultipleField(field_container, field):
     with field_container:
-        div(str(field.label), _class="form-label")
+        div(field.label.text, _class="form-label")
         with select(_class="form-select", id=field.id, value="", name=field.name, multiple="multiple", type="text"):
             for choice in field.queryset:
                 with option(str(choice), value=choice.id):
@@ -56,9 +76,10 @@ def render_ModelSelectMultipleField(field_container, field):
                         if field_data.id == choice.id:
                             attr(selected="")
 
+
 def render_ModelSelectField(field_container, field):
     with field_container:
-        div(str(field.label), _class="form-label")
+        div(field.label.text, _class="form-label")
         with select(_class="form-select", id=field.id, value="", name=field.name, type="text"):
             for choice in field.queryset:
                 with option(str(choice), value=choice.id):
@@ -111,14 +132,14 @@ def render_form(render_form, title, action, method="POST", submit_text="Submit")
         with div(_class="card-body") as body:
             for field in render_form:
                 if field.type == "CSRFTokenField":
-                    body.add(render_form.csrf_token())
+                    body.add(raw(str(field())))
                 else:
                     with div(_class="mb-3") as field_container:
                         render_callback = getattr(sys.modules[__name__], f"render_{field.type}", None)
                         if callable(render_callback):
                             render_callback(field_container, field)
                         else:
-                            div(str(field.label), _class="form-label")
+                            div(field.label.text, _class="form-label")
                             input_field = input_(
                                 _class="form-control",
                                 type=field.type,

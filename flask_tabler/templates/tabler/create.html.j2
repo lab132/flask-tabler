@@ -7,3 +7,8 @@
     {{tabler_render_form(form, action=endpoint, title=title)}}
 </div>
 {% endblock content %}
+
+{% block scripts %}
+{{super()}}
+{{tabler_render_form_scripts(form)}}
+{% endblock %}
