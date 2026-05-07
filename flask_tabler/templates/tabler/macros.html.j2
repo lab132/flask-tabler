@@ -7,22 +7,23 @@
 </div>
 {%- endmacro %}
 
-{% macro render_pagination(pagination, endpoint, attributes="") %}
+{% macro render_pagination(pagination, endpoint, attributes="", pagination_query=None) %}
+{% set extra_query = pagination_query|default({}, true)|urlencode %}
 <ul class="pagination {{attributes}}">
     <li class="page-item {{ 'disabled' if not pagination.has_prev else '' }}">
-        <a class="page-link" href="{{ url_for(endpoint, p=pagination.prev_num) }}">
+        <a class="page-link" href="{{ url_for(endpoint, p=pagination.prev_num) }}{% if extra_query %}&{{ extra_query }}{% endif %}">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M15 6l-6 6l6 6"></path></svg>
         prev</a>
     </li>
     {% for page in pagination.iter_pages() %}
     {% if page %}
-        <li class="page-item {{ 'active' if page == pagination.page else '' }}"> <a class="page-link" href="{{ url_for(endpoint, p=page) }}">{{ page }}</a></li>
+        <li class="page-item {{ 'active' if page == pagination.page else '' }}"> <a class="page-link" href="{{ url_for(endpoint, p=page) }}{% if extra_query %}&{{ extra_query }}{% endif %}">{{ page }}</a></li>
     {% else %}
       <li class="page-item disabled"> <a class="page-link" href="#">…</a></li>
     {% endif %}
     {% endfor %}
     <li class="page-item {{ 'disabled' if not pagination.has_next else '' }}">
-        <a class="page-link" href="{{ url_for(endpoint, p=pagination.next_num) }}">
+        <a class="page-link" href="{{ url_for(endpoint, p=pagination.next_num) }}{% if extra_query %}&{{ extra_query }}{% endif %}">
         next
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 6l6 6l-6 6"></path></svg>
         </a>
@@ -30,7 +31,7 @@
 </ul>
 {% endmacro %}
 
-{% macro render_table_custom(objects, headers, header_titles=None, header_attributes=None, pagination=None, pagination_endpoint='') %}
+{% macro render_table_custom(objects, headers, header_titles=None, header_attributes=None, pagination=None, pagination_endpoint='', pagination_query=None) %}
 <div class="card">
     <div class="table-responsive">
         <table class="table table-vcenter card-table table-striped">
@@ -74,7 +75,7 @@
             </span>
              entries
         </p>
-        {{ render_pagination(pagination, pagination_endpoint, attributes="m-0 ms-auto") }}
+        {{ render_pagination(pagination, pagination_endpoint, attributes="m-0 ms-auto", pagination_query=pagination_query) }}
     </div>
     {% endif %}
 </div>
